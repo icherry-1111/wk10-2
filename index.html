@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재미있는 영어 문법 놀이! (One vs. Many)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #2C3E50;
+            --light: #F7F9FC;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Jua', sans-serif;
+        }
+
+        body {
+            background-color: #E0F7FA;
+            background-image: radial-gradient(#B2EBF2 2px, transparent 2px);
+            background-size: 24px 24px;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+            border: 6px solid #B2EBF2;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top Header */
+        header {
+            background: var(--accent);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px dashed #FFD54F;
+            position: relative;
+        }
+
+        header h1 {
+            color: #D84315;
+            font-size: 2rem;
+            text-shadow: 2px 2px 0px #FFF;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #5D4037;
+            margin-top: 5px;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #E0F2F1;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 4px;
+            border: none;
+            background: transparent;
+            font-size: 1.05rem;
+            color: #00695C;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Main Content View */
+        .content-area {
+            padding: 24px 20px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Box System */
+        .card {
+            background: #FFF8E1;
+            border: 3px solid #FFE082;
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .rule-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 10px 0;
+            gap: 8px;
+        }
+
+        .rule-box {
+            background: white;
+            padding: 12px;
+            border-radius: 16px;
+            border: 3px solid #81D4FA;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .emoji-big {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+        }
+
+        /* Story Mode Styles */
+        .story-box {
+            background: #E8F5E9;
+            border: 3px solid #A5D6A7;
+            border-radius: 20px;
+            padding: 18px;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            color: #1B5E20;
+            text-align: center;
+            position: relative;
+        }
+
+        .story-text span.highlight {
+            background: #FFF59D;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #C62828;
+            border: 2px dashed #FBC02D;
+        }
+
+        /* Quiz Styles */
+        .quiz-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .quiz-card {
+            background: #F3E5F5;
+            border: 3px solid #CE93D8;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            color: #4A148C;
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-option {
+            background: white;
+            border: 3px solid #AB47BC;
+            color: #4A148C;
+            padding: 14px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-option:hover {
+            transform: scale(1.03);
+            background: #F3E5F5;
+        }
+
+        .btn-option:active {
+            transform: scale(0.97);
+        }
+
+        /* Action Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #D32F2F;
+            transition: all 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .btn-primary:active {
+            box-shadow: 0 2px 0 #D32F2F;
+            transform: translateY(3px);
+        }
+
+        .speaker-btn {
+            background: #FFF;
+            border: 2px solid #BDBDBD;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Result View */
+        .result-box {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .result-score {
+            font-size: 3rem;
+            color: #FFB300;
+            margin: 15px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.5rem; }
+            .quiz-options { grid-template-columns: 1fr; }
+            .rule-visual { flex-direction: column; }
+            .tab-btn { font-size: 0.9rem; padding: 8px 2px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>🎈 재미있는 영어 문법 🎈</h1>
+        <p>하나(One)와 여러 개(Many)를 배워보아요!</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('learn')">1. 문법 설명</button>
+        <button class="tab-btn" onclick="switchTab('story1')">2. 동화 1</button>
+        <button class="tab-btn" onclick="switchTab('story2')">3. 동화 2</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">4. 재미 퀴즈</button>
+    </nav>
+
+    <div class="content-area">
+        <!-- 1. 문법 설명 섹션 -->
+        <section id="view-learn" class="view-section active">
+            <div class="card">
+                <div class="card-title">💡 [s] 하나만 붙이면 끝! & a/an 구분하기</div>
+                
+                <!-- 기존 복수명사 설명 -->
+                <div class="rule-visual">
+                    <div class="rule-box">
+                        <span class="badge">1개 일 때</span>
+                        <div class="emoji-big">🍎</div>
+                        <strong style="font-size: 1.1rem;">An Apple</strong>
+                        <button class="speaker-btn" onclick="speak('An Apple')">🔊</button>
+                    </div>
+                    <div style="font-size: 1.8rem; color: #FF9800;">➔</div>
+                    <div class="rule-box">
+                        <span class="badge" style="background: var(--secondary);">여러 개 일 때 (+s)</span>
+                        <div class="emoji-big">🍎🍎🍎</div>
+                        <strong style="font-size: 1.1rem; color: #00796B;">Apple<span style="color:red;">s</span></strong>
+                        <button class="speaker-btn" onclick="speak('Apples')">🔊</button>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.95rem; color: #444; background: white; padding: 8px; border-radius: 12px; margin-top: 6px;">
+                    물건이나 동물이 여러 개일 때는 단어 끝에 <b style="color: red; font-size: 1.1rem;">-s</b>를 붙여요!
+                </p>
+
+                <!-- 추가된 a, an 구분 내용 -->
+                <div style="margin-top: 12px; background: #E1F5FE; border: 2px dashed #81D4FA; border-radius: 14px; padding: 10px; text-align: left;">
+                    <div style="font-size: 1rem; color: #01579B; font-weight: bold; margin-bottom: 4px;">✨ 1개일 때 [a]와 [an] 고르는 법!</div>
+                    <p style="font-size: 0.9rem; color: #333; line-height: 1.4;">
+                        • 보통 때는 앞에 <b>a</b>를 붙여요! (예: <b>a</b> dog)<br>
+                        • 단어 첫 소리가 <b>아, 에, 이, 오, 우 (a, e, i, o, u)</b>로 시작하면 <b>an</b>을 붙여요! (예: <b>an</b> apple)
+                    </p>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="switchTab('story1')">첫 번째 동화 읽기! ➔</button>
+        </section>
+
+        <!-- 2. 첫 번째 동화 지문 섹션 -->
+        <section id="view-story1" class="view-section">
+            <div class="story-box">
+                <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; color: #2E7D32;">
+                    🏡 동물 농장에 놀러왔어요! 
+                    <button class="speaker-btn" onclick="speakStory1()">🔊 전체 듣기</button>
+                </div>
+                <div class="story-text">
+                    Look! I see <span class="highlight">a dog 🐶</span>.<br>
+                    Oh, there are three <span class="highlight">cats 🐱🐱🐱</span>!<br>
+                    <span class="highlight">A bird 🐦</span> is singing in the tree.<br>
+                    I see many <span class="highlight">ducks 🦆🦆</span> in the pond!
+                </div>
+            </div>
+
+            <div style="background: #E1F5FE; padding: 10px; border-radius: 16px; border: 2px solid #81D4FA; text-align: center; font-size: 0.95rem;">
+                💡 <b>힌트:</b> 1개인 아이들(dog, bird)과 여러 개인 아이들(cats, ducks)의 끝을 잘 비교해보세요!
+            </div>
+
+            <button class="btn-primary" onclick="switchTab('story2')">두 번째 동화 읽기! ➔</button>
+        </section>
+
+        <!-- 3. 두 번째 동화 지문 섹션 -->
+        <section id="view-story2" class="view-section">
+            <div class="story-box">
+                <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; color: #2E7D32;">
+                    🌳 과수원과 숲속 산책! 
+                    <button class="speaker-btn" onclick="speakStory2()">🔊 전체 듣기</button>
+                </div>
+                <div class="story-text">
+                    Yummy! I want to eat <span class="highlight">a banana 🍌</span>.<br>
+                    Look at those sweet <span class="highlight">apples 🍎🍎🍎</span>!<br>
+                    <span class="highlight">A cute bunny 🐰</span> is hopping around.<br>
+                    Two smart <span class="highlight">monkeys 🐵🐵</span> are eating snacks!
+                </div>
+            </div>
+
+            <div style="background: #E1F5FE; padding: 10px; border-radius: 16px; border: 2px solid #81D4FA; text-align: center; font-size: 0.95rem;">
+                💡 <b>힌트:</b> 바나나와 토끼는 1개라서 그냥 쓰지만, 사과와 원숭이는 여러 개라 -s가 붙었어요!
+            </div>
+
+            <button class="btn-primary" onclick="switchTab('quiz')">퀴즈 풀러 가기! ➔</button>
+        </section>
+
+        <!-- 4. 퀴즈 섹션 -->
+        <section id="view-quiz" class="view-section">
+            <div class="quiz-progress">
+                <span>문제 <b id="current-q-num" style="color: var(--primary);">1</b> / 4</span>
+                <span id="score-display">점수: 0점</span>
+            </div>
+
+            <div class="quiz-card" id="quiz-card-content">
+                <!-- 퀴즈 내용이 JS로 동적 생성됩니다 -->
+            </div>
+        </section>
+
+        <!-- 5. 결과 화면 -->
+        <section id="view-result" class="view-section">
+            <div class="result-box">
+                <h2>🎉 참 잘했어요! 🎉</h2>
+                <div class="result-score" id="final-score">⭐ ⭐ ⭐</div>
+                <p id="result-message" style="font-size: 1.2rem; margin-bottom: 18px; color: #333;"></p>
+                <button class="btn-primary" onclick="resetQuiz()">다시 풀어보기 🔄</button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // 음성 지원 (TTS) 함수
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8; 
+            utterance.pitch = 1.1; 
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function speakStory1() {
+        speak("Look! I see a dog. Oh, there are three cats! A bird is singing in the tree. I see many ducks in the pond!");
+    }
+
+    function speakStory2() {
+        speak("Yummy! I want to eat a banana! Look at those sweet apples! A cute bunny is hopping around. Two smart monkeys are eating snacks!");
+    }
+
+    // 탭 전환
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+
+        if (tabName === 'learn') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('view-learn').classList.add('active');
+        } else if (tabName === 'story1') {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('view-story1').classList.add('active');
+        } else if (tabName === 'story2') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('view-story2').classList.add('active');
+        } else if (tabName === 'quiz') {
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.getElementById('view-quiz').classList.add('active');
+            if (currentQuestionIndex === 0 && score === 0) {
+                renderQuestion();
+            }
+        }
+    }
+
+    // 퀴즈 데이터
+    const quizData = [
+        {
+            emoji: "🍎🍎🍎",
+            question: "사과가 '여러 개' 있어요!",
+            options: ["An Apple", "Apples"],
+            answer: 1,
+            hint: "여러 개일 때는 끝에 -s 가 붙어요!"
+        },
+        {
+            emoji: "🐶",
+            question: "강아지가 '한 마리' 있네요!",
+            options: ["A dog", "Two dogs"],
+            answer: 0,
+            hint: "하나일 때는 그냥 dog!"
+        },
+        {
+            emoji: "🍌",
+            question: "바나나가 '한 개' 있어요!",
+            options: ["Bananas", "A banana"],
+            answer: 1,
+            hint: "하나만 있을 땐 그냥 banana예요!"
+        },
+        {
+            emoji: "🐵🐵",
+            question: "원숭이가 '두 마리' 있어요!",
+            options: ["Monkeys", "A monkey"],
+            answer: 0,
+            hint: "2마리 이상 여러 개니까 -s를 붙여요!"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function renderQuestion() {
+        const quizCard = document.getElementById('quiz-card-content');
+        const q = quizData[currentQuestionIndex];
+
+        document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+        document.getElementById('score-display').innerText = `점수: ${score * 25}점`;
+
+        quizCard.innerHTML = `
+            <div class="emoji-big" style="margin-bottom: 8px;">${q.emoji}</div>
+            <div class="quiz-question">${q.question}</div>
+            <p style="color: #7B1FA2; font-size: 0.95rem; margin-bottom: 12px;">알맞은 단어를 골라보세요!</p>
+            <div class="quiz-options">
+                ${q.options.map((opt, idx) => `
+                    <button class="btn-option" onclick="checkAnswer(${idx})">
+                        ${opt}
+                        <span class="speaker-btn" onclick="event.stopPropagation(); speak('${opt}')">🔊</span>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function checkAnswer(selectedIndex) {
+        const q = quizData[currentQuestionIndex];
+        if (selectedIndex === q.answer) {
+            score++;
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+            speak("Good job! " + q.options[q.answer]);
+            alert("정답이에요! 👏 참 잘했어요!");
+        } else {
+            speak("Try again!");
+            alert(`아쉬워요! 힌트: ${q.hint}`);
+        }
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            renderQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById('view-result').classList.add('active');
+
+        const finalScoreElem = document.getElementById('final-score');
+        const msgElem = document.getElementById('result-message');
+        const totalScore = score * 25;
+
+        if (totalScore === 100) {
+            finalScoreElem.innerText = "⭐ ⭐ ⭐";
+            msgElem.innerText = "와우! 만점이에요! 최고의 문법 박사님! 🏆";
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+            speak("Perfect! You are awesome!");
+        } else if (totalScore >= 50) {
+            finalScoreElem.innerText = "⭐ ⭐";
+            msgElem.innerText = "잘했어요! 조금만 더 연습하면 만점도 문제없어요! 👍";
+            speak("Great job!");
+        } else {
+            finalScoreElem.innerText = "⭐";
+            msgElem.innerText = "차근차근 다시 한번 복습해볼까요? 파이팅! 🐥";
+            speak("Keep it up!");
+        }
+    }
+
+    function resetQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        switchTab('learn');
+    }
+</script>
+</body>
+</html>
